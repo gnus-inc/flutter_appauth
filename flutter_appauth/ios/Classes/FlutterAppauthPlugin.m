@@ -309,7 +309,6 @@ NSString *const AUTHORIZE_ERROR_MESSAGE_FORMAT = @"Failed to authorize: %@";
     return processedResponses;
 }
 
-
 - (BOOL)application:(UIApplication *)application
             openURL:(NSURL *)url
             options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options {
@@ -320,10 +319,21 @@ NSString *const AUTHORIZE_ERROR_MESSAGE_FORMAT = @"Failed to authorize: %@";
     
     return NO;
 }
+
 - (BOOL)application:(UIApplication *)application
             openURL:(NSURL *)url
   sourceApplication:(NSString *)sourceApplication
          annotation:(id)annotation {
     return [self application:application openURL:url options:@{}];
 }
+
+- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray *))restorationHandler {
+    if ([_currentAuthorizationFlow resumeExternalUserAgentFlowWithURL:userActivity.webpageURL]) {
+        _currentAuthorizationFlow = nil;
+        return YES;
+    }
+    
+    return YES;
+}
+
 @end
